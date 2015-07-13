@@ -48,13 +48,14 @@ exports.findByIdOrAdd = function(request, response) {
   db.collection('users', function(err, collection) {
     collection.findOne({'id':id}, function(err, item) {
       console.log('finding an id')
+      console.log(response)
       if(err) {
         console.log('in error')
-        response.send(err)
+        response(err)
       } else if(item) {
         console.log(JSON.stringify(item));
         console.log('found a guy')
-        response.send(item);
+        response(null, item);
       } else {
 
         var user = request;
@@ -62,10 +63,10 @@ exports.findByIdOrAdd = function(request, response) {
         collection.insert({'id': user.id, 'email':user.email, 'name': user.displayName}, {safe:true}, function(err, result) {
           if(err) {
             console.log('theres been an error updating the user: ' + err);
-            response.send({'error':'theres been an error'});
+            response({'error':'theres been an error'});
           } else {
             console.log('' + result + 'documents updated');
-            response.send('hello')
+            response(result)
           }
         });
       }

@@ -1,4 +1,5 @@
 var express = require('express'),
+ids = require('./ids.js'),
 app = express(),
 users = require('./users.js'),
 bodyParser = require('body-parser'),
@@ -8,8 +9,8 @@ session = require('express-session'),
 cookieParser = require('cookie-parser'),
 methodOverride = require('method-override');
 
-var FACEBOOK_APP_ID = '921241331269731'
-var FACEBOOK_APP_SECRET = '72c5737b25b716c9854cc1157e32639e';
+// var FACEBOOK_APP_ID = ''
+// var FACEBOOK_APP_SECRET = '';
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -18,6 +19,8 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
+
+app.use(passport.initialize());
 
 passport.use(new FacebookStrategy({
     clientID: FACEBOOK_APP_ID,
@@ -32,16 +35,10 @@ passport.use(new FacebookStrategy({
     });*/
 
     // ERRORS OUT, response.send(item); AT LINE 57, USERS.JS
-    /*users.findByIdOrAdd(profile, function(err, user) {
-      if(err) {
-        return done('theres been an error');
-      } else {
-        return done(profile)
-      }
-    });*/
+    users.findByIdOrAdd(profile, done);
 
     // RETURN EMPTY OBJECT
-    return done(users.findByIdOrAdd(profile, null))
+    //return done(users.findByIdOrAdd(profile, null))
 
     // RETURNS PROFILE STRING
     //return done(JSON.stringify(profile))
