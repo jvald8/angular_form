@@ -9,9 +9,6 @@ session = require('express-session'),
 cookieParser = require('cookie-parser'),
 methodOverride = require('method-override');
 
-// var FACEBOOK_APP_ID = ''
-// var FACEBOOK_APP_SECRET = '';
-
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -29,19 +26,7 @@ passport.use(new FacebookStrategy({
     enableProof: false
   },
   function(accessToken, refreshToken, profile, done) {
-    // PASSPORT EXAMPLE
-    /*User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return done(err, user);
-    });*/
-
-    // ERRORS OUT, response.send(item); AT LINE 57, USERS.JS
-    users.findByIdOrAdd(profile, done);
-
-    // RETURN EMPTY OBJECT
-    //return done(users.findByIdOrAdd(profile, null))
-
-    // RETURNS PROFILE STRING
-    //return done(JSON.stringify(profile))
+    return users.findByIdOrAdd(profile, done);
   }
 ));
 
@@ -53,8 +38,9 @@ app.get('/', function(req, res){
   res.send({ user: req.user });
 });
 
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.send({ user: req.user });
+app.get('/account', function(req, res){
+  console.log(req)
+  res.send({ user: req.user});
 });
 
 app.get('/login', function(req, res){

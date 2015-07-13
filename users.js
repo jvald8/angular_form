@@ -107,7 +107,6 @@ exports.updateUser = function(request, response) {
 }
 
 
-
 var populateDb = function() {
   var users = [
     {
