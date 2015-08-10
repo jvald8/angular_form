@@ -26,7 +26,14 @@ passport.use(new FacebookStrategy({
     enableProof: false
   },
   function(accessToken, refreshToken, profile, done) {
-    return users.findByIdOrAdd(profile, done);
+    users.findByIdOrAdd(profile, function(err, user) {
+      if(err) {
+        return done(err)
+      } else {
+        console.log('user from express: ' + user)
+        return done(null, user)
+      }
+    });
   }
 ));
 
@@ -34,30 +41,18 @@ app.use(express.static('public'));
 
 app.use(bodyParser.json());
 
-app.get('/', function(req, res){
-  res.send({ user: req.user });
-});
-
-app.get('/account', function(req, res){
-  console.log(req)
-  res.send({ user: req.user});
-});
-
-app.get('/login', function(req, res){
-  res.send({ user: req.user });
-});
-
 app.get('/auth/facebook',
-  passport.authenticate('facebook', { scope: [ 'email' ] }),
-  function(req, res){
-    // The request will be redirected to Facebook for authentication, so this
-    // function will not be called.
-  });
+  passport.authenticate('facebook',{ scope : 'email' }));
 
 app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
+  passport.authenticate('facebook', { successRedirect: '/auth/success', failureRedirect: '/auth/failure' }));
+
+app.get('/auth/success', function(req, res) {
+  res.send({ state: 'success', user: req.headers ? req.user : null });
+});
+
+app.get('/auth/failure', function(req, res) {
+  res.send({ state: 'failure', user: null });
 });
 
 app.get('/logout', function(req, res){
@@ -66,7 +61,6 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/users', users.findUser);
-app.post('/users', users.addUser);
 app.put('/users/:id', users.updateUser);
 
 app.listen(process.env.PORT || 3001, function() {

@@ -12,16 +12,25 @@
       <a href='http://www.localhost:3001/logout'>Log out</a>
     </div>
 
-    <!--<p>SIGN UP or LOGIN</p>
-    <input type='text' name='email' placeholder='what is your email?' ng-model='user.email'></input>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="text-center">Id</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center">{{currentUser.id}}</td>
+              <td>{{currentUser.email}}</td>
+              <td>{{currentUser.name}}
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <br>
-    <input type='text' name='password' placeholder='what is your password?' ng-model='user.password'></input>
-
-    <br>
-    <button ng-click='submitForm(user)'>signup</button>
-
-    <button ng-click='loginForm(user)'>login</button>-->
 
   </body>
 </html>

@@ -1,31 +1,17 @@
-var angularForm = angular.module('angularForm', []);
-
-angularForm.controller('FormController', function($scope, $http) {
-  $scope.user = {
+angular.module('angularForm', [])
+.controller('FormController', function($scope, $http) {
+  $scope.currentUser = {
+    id: '',
     email: '',
-    password: ''
+    name: ''
   };
 
-  $scope.submitForm = function(user) {
+  $http.get('http://localhost:3001/users/')
+  .success(function(data, status, headers, config) {
+    $scope.currentUser = data[0];
+  })
+  .error(function(data, status, headers, config) {
+    console.log(data)
+  });
 
-    $http.post('/users', user)
-    .success(function(data, status, headers, config) {
-
-    })
-    .error(function(data, status, headers, config) {
-
-    })
-  }
-
-  $scope.loginForm = function(user) {
-
-    $http.post('/authenticate', user)
-    .success(function(data, status, headers, config) {
-
-    })
-    .error(function(data, status, headers, config) {
-
-    })
-
-  }
 })

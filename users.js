@@ -14,7 +14,6 @@ var server = new Server('localhost', 27017, {auto_reconnect:true});
 var db = new Db('usersdb', server);
 // Create an instance of a mongo db object, call is notes, and open it using the server object.
 
-
 // Open the notes db connection to the server with a callback that asks if there's an error
 // If there's no error, console log a success message, then check to see if that particular db exists.
 // If that db exists, then move on. else create a new database named notes and populate it with some data
@@ -35,6 +34,8 @@ db.open(function(err, db) {
 exports.findUser = function(request, response) {
   db.collection('users', function(err, collection) {
     collection.find().toArray(function(err, items) {
+      console.log(items)
+      response.setHeader('Access-Control-Allow-Origin', '*');
       response.send(items);
     });
   });
@@ -47,26 +48,24 @@ exports.findByIdOrAdd = function(request, response) {
 
   db.collection('users', function(err, collection) {
     collection.findOne({'id':id}, function(err, item) {
-      console.log('finding an id')
-      console.log(response)
       if(err) {
-        console.log('in error')
         response(err)
       } else if(item) {
-        console.log(JSON.stringify(item));
-        console.log('found a guy')
-        response(null, item);
+        console.log(JSON.stringify(item))
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response(null, JSON.stringify(item));
       } else {
 
         var user = request;
-
         collection.insert({'id': user.id, 'email':user.email, 'name': user.displayName}, {safe:true}, function(err, result) {
           if(err) {
             console.log('theres been an error updating the user: ' + err);
+            response.setHeader('Access-Control-Allow-Origin', '*');
             response({'error':'theres been an error'});
           } else {
             console.log('' + result + 'documents updated');
-            response(result)
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            response(null, result)
           }
         });
       }
@@ -83,7 +82,7 @@ exports.addUser = function(request, response) {
         console.log('theres been an error updating the user: ' + err);
         response.send({'error':'theres been an error'});
       } else {
-        console.log('' + result + 'documents updated');
+        console.log(result + 'documents updated');
         response.send(user);
       }
     });
@@ -99,7 +98,7 @@ exports.updateUser = function(request, response) {
         console.log('theres been an error updating user: ' + err);
         response.send({'error':'theres been an error'});
       } else {
-        console.log('' + result + 'documents updated');
+        console.log(result + 'documents updated');
         response.send(user);
       }
     });
